@@ -835,13 +835,12 @@ class Options(_OptionBaseReader):
 
 
     if __name__ == '__main__':
-
         aapl = Options('aapl')
         calls = aapl.get_call_data()
         puts = aapl.get_put_data()
 
-        puts = aapl.get_put_data(month = 9, year = 2020)
-        calls = aapl.get_call_data(month = 9, year = 2020)
+        puts = aapl.get_put_data(month = 9, year = 2018)
+        calls = aapl.get_call_data(month = 9, year = 2018)
 
         ### Get the calls on 21st of September, 2018
         apple_calls_on_day = calls.loc[(slice(None), '2018-09-21'),:][['Vol', 'Last', 'Underlying_Price']]
@@ -851,7 +850,7 @@ class Options(_OptionBaseReader):
         bets = [i+j for i,j in zip (strike_list, premiums)]
         total_weighted_sum = sum([i*j for i,j in zip(bets, vol_list)]) 
         call_option_prediction = total_weighted_sum/sum(vol_list)
-        print('Call option prediction', call_option_prediction)
+        print 'Call option prediction', call_option_prediction
 
 
         ### Get the puts on 21st of September, 2018        
@@ -862,7 +861,7 @@ class Options(_OptionBaseReader):
         negative_bets = [i+j for i,j in zip (negative_strike_list, negative_premium_list)]
         negative_total_weighted_volume  = sum([i*j for i,j in zip(negative_bets, negative_vol)])
         put_option_prediction = negative_total_weighted_volume/sum(negative_vol)
-        print('Put option prediction', call_option_prediction)
+        print 'Put option prediction', call_option_prediction
 
 
-        print('Option prediction:', (call_option_prediction * sum(vol_list) + put_option_prediction * sum(negative_vol))/(sum(negative_vol) + sum(vol_list)))
+        print 'Option prediction:', (call_option_prediction * sum(vol_list) + put_option_prediction * sum(negative_vol))/(sum(negative_vol) + sum(vol_list))

@@ -1,12 +1,15 @@
+import numpy as np
+
 import matplotlib
 import matplotlib.pyplot as plt
 from matplotlib.gridspec import GridSpec
 matplotlib.rcParams.update({'font.size': 18})
 plt.rcParams['figure.figsize'] = [20, 10]
-import pandas as pd
-import numpy as np
-from options import Options
 
+import pandas as pd
+#The following line will fix a pandas issue in Utuntu.
+pd.core.common.is_list_like = pd.api.types.is_list_like
+from options import Options
 
 
 def get_option_data(ticker, month, year, expiration_date):
