@@ -1,11 +1,10 @@
 import numpy as np
-
+import argparse
 import matplotlib
 import matplotlib.pyplot as plt
 from matplotlib.gridspec import GridSpec
 matplotlib.rcParams.update({'font.size': 18})
 plt.rcParams['figure.figsize'] = [20, 10]
-
 import pandas as pd
 #The following line will fix a pandas issue in Utuntu.
 pd.core.common.is_list_like = pd.api.types.is_list_like
@@ -108,14 +107,20 @@ if __name__ == '__main__':
     ITM_OPTION_VISUAZLIZATION_FILTER = 0.1
 
     # Global parameters to choose stock and target date.
-    TICKER =  'MSFT'
-    EXPIRATION_DATE = '2020-06-19'
-
-    MONTH = int(EXPIRATION_DATE.split('-')[1])
-    YEAR = int(EXPIRATION_DATE.split('-')[0])
+    parser = argparse.ArgumentParser(
+            description='Visualize stock option volume. E.g. python show_option_bets.py MSFT 2020-06-19')
+    parser.add_argument('stock', type=str,
+            help='Stock Ticker. E.g. MSFT, AAPL, etc.')
+    parser.add_argument('expiration', type=str,
+            help='Expiration date; required format yyyy-mm-dd. E.g. 2020-06-19.')
+    args = parser.parse_args()
+    TICKER = args.stock
+    EXPIRATION_DATE = args.expiration
+    month = int(EXPIRATION_DATE.split('-')[1])
+    year = int(EXPIRATION_DATE.split('-')[0])
 
     # Get call and put dataframes, and latest stock price.
-    call_df, put_df, current_stock_price = get_option_data(TICKER, MONTH, YEAR, EXPIRATION_DATE)
+    call_df, put_df, current_stock_price = get_option_data(TICKER, month, year, EXPIRATION_DATE)
 
     # Filter out deep-in-the-money calls and puts.
     itm_call_filter = current_stock_price * (1 - ITM_OPTION_VISUAZLIZATION_FILTER)
@@ -125,4 +130,3 @@ if __name__ == '__main__':
 
     # Visualize and save plot locally.  
     visualize_call_put_volume_in_bubble_plot(filtered_call_df, filtered_put_df, current_stock_price)
-
