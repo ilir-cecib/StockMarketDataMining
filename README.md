@@ -4,10 +4,12 @@ Python visualization tools for stock market data.
 # Description
 usage: show_option_bets.py [-h] stock expiration
 
-Visualize stock option volume. E.g. python show_option_bets.py MSFT 2020-06-19
+Visualize stock option volume. E.g. python show_option_bets.py STOCK EXPIRATION_DATE
 
 positional arguments:
+
   stock       Stock Ticker. E.g. MSFT, AAPL, etc.
+
   expiration  Expiration date; required format yyyy-mm-dd. E.g. 2020-06-19.
 
 optional arguments:
