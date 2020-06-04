@@ -834,34 +834,52 @@ class Options(_OptionBaseReader):
 
 
 
-    if __name__ == '__main__':
+if __name__ == '__main__':
         aapl = Options('aapl')
         calls = aapl.get_call_data()
         puts = aapl.get_put_data()
 
-        puts = aapl.get_put_data(month = 9, year = 2018)
-        calls = aapl.get_call_data(month = 9, year = 2018)
-
+        puts = aapl.get_put_data(month = 6, year = 2020)
+        calls = aapl.get_call_data(month = 6, year = 2020)
+        
+        total_weighted_sum = 1
+        sum_vol_list = 1
+        
         ### Get the calls on 21st of September, 2018
-        apple_calls_on_day = calls.loc[(slice(None), '2018-09-21'),:][['Vol', 'Last', 'Underlying_Price']]
+        apple_calls_on_day = calls.loc[(slice(None), '2020-06-05'),:][['Vol', 'Last', 'Underlying_Price']]
         premiums = apple_calls_on_day.Last.tolist()
         strike_list = list(apple_calls_on_day.index.get_level_values(0))
         vol_list=apple_calls_on_day.Vol.tolist()
         bets = [i+j for i,j in zip (strike_list, premiums)]
-        total_weighted_sum = sum([i*j for i,j in zip(bets, vol_list)]) 
-        call_option_prediction = total_weighted_sum/sum(vol_list)
-        print 'Call option prediction', call_option_prediction
+        #turning all NaN values to 0
+        ###EITHER:import math
+        ###vol_list = [0 if math.isnan(i) else i for i in vol_list]
+        ###OR convert to dataframe then back to list as shown below
+        import pandas as pd
+        vol_list = pd.Series(vol_list).fillna(0).tolist()
+        #checking if NaN values are removed
+        print(vol_list)
+        total_weighted_sum = sum(i*j for i,j in zip(bets,vol_list))
+        sum_vol_list = sum(vol_list)
+        print(total_weighted_sum)
+        print(sum(vol_list))
+        call_option_prediction = float(total_weighted_sum)/float(sum_vol_list)
+        print('Call option prediction', call_option_prediction)
 
 
         ### Get the puts on 21st of September, 2018        
-        apple_puts_on_day = puts.loc[(slice(None), '2018-09-21'),:][['Vol', 'Last', 'Underlying_Price']]        
+        apple_puts_on_day = puts.loc[(slice(None), '2020-06-05'),:][['Vol', 'Last', 'Underlying_Price']]        
+        #
         negative_vol = apple_puts_on_day.Vol.tolist()
+        negative_vol = pd.Series(negative_vol).fillna(0).tolist()
+        #convert NaN to 0
         negative_premium_list = apple_puts_on_day.Last.tolist()
         negative_strike_list = list(apple_puts_on_day.index.get_level_values(0))
         negative_bets = [i+j for i,j in zip (negative_strike_list, negative_premium_list)]
         negative_total_weighted_volume  = sum([i*j for i,j in zip(negative_bets, negative_vol)])
         put_option_prediction = negative_total_weighted_volume/sum(negative_vol)
-        print 'Put option prediction', call_option_prediction
+        print('Put option prediction:', put_option_prediction)
+        print('Volume of calls:', sum(vol_list))
+        print('Volume of puts:', sum(negative_vol))
 
-
-        print 'Option prediction:', (call_option_prediction * sum(vol_list) + put_option_prediction * sum(negative_vol))/(sum(negative_vol) + sum(vol_list))
+        print('Option prediction:', (call_option_prediction * sum(vol_list) + put_option_prediction * sum(negative_vol))/(sum(negative_vol) + sum(vol_list)))
